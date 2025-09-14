@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio GitHub Prêt à Tester</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#111; color:#fff; }
+header { background:#222; padding:10px; display:flex; justify-content:space-between; align-items:center; }
+.menu { cursor:pointer; font-size:20px; }
+nav { display:none; background:#333; padding:10px; }
+nav a { display:block; color:#fff; margin:5px 0; text-decoration:none; }
+.annonce { background:#444; padding:10px; text-align:center; font-weight:bold; }
+.contenu { padding:20px; margin-bottom:100px; }
+.fichier { background:#222; padding:10px; margin:5px 0; cursor:pointer; border-radius:5px; }
+.fichier:hover { background:#444; }
+#adminPanel { display:none; background:#222; padding:10px; margin-top:20px; }
+.item { display:flex; justify-content:space-between; background:#333; padding:5px; margin:5px 0; border-radius:5px; }
+.btn { padding:5px 8px; cursor:pointer; background:red; border:none; color:#fff; border-radius:4px; }
+footer { background:#222; color:#fff; text-align:center; padding:10px; position:fixed; bottom:0; width:100%; }
+#playerContainer { margin-top:20px; text-align:center; }
+video, audio { max-width:100%; margin-bottom:10px; }
+iframe { max-width:100%; }
+input { padding:5px; margin:5px 0; width:60%; }
+#playerControls button { margin:5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="menu" onclick="toggleMenu()">☰ Menu</div>
+  <h1>chocolat</h1>
+</header>
+
+<nav id="menu">
+  <a href="#">Accueil</a>
+  <a href="#" onclick="showAdminLogin()">Admin</a>
+</nav>
+
+<div class="annonce" id="annonceZone">
+  <marquee id="annonceText">Bienvenue sur la radio 🎶</marquee>
+</div>
+
+<div class="contenu">
+  <h2>Fichiers disponibles 🎵</h2>
+  <div id="fileList"></div>
+
+  <div id="playerContainer">
+    <audio id="audioPlayer" controls style="display:none;"></audio>
+    <video id="videoPlayer" controls style="display:none;"></video>
+    <div id="youtubePlayer" style="display:none;">
+      <iframe id="ytIframe" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div id="playerControls">
+      <button onclick="playCurrent()" class="btn">▶️ Play</button>
+      <button onclick="stopCurrent()" class="btn">⏹️ Stop</button>
+      <button onclick="toggleRepeat()" class="btn">🔁 Repeat</button>
+      <button onclick="toggleRepeatAll()" class="btn">🔁 All</button>
+    </div>
+  </div>
+</div>
+
+<div id="adminPanel">
+  <h2>Tableau Administrateur</h2>
+
+  <h3>📢 Gestion des annonces</h3>
+  <input type="text" id="newAnnonce" placeholder="Nouvelle annonce">
+  <button onclick="ajouterAnnonce()">Ajouter</button>
+  <div id="listeAnnonces"></div>
+
+  <h3>🎶 Gestion des fichiers</h3>
+  <input type="text" id="newFichierNom" placeholder="Nom du fichier">
+  <input type="text" id="newFichierURL" placeholder="URL du fichier audio/vidéo">
+  <button onclick="ajouterFichier()">Ajouter</button>
+  <div id="listeFichiers"></div>
+</div>
+
+<footer>
+  <p>2025 lesfacilitateirs tois droots reservés</p>
+</footer>
+
+<script>
+// ---------- MENU ----------
+function toggleMenu() {
+  let menu = document.getElementById("menu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+// ---------- ADMIN ----------
+let isAdmin = false;
+function showAdminLogin() {
+  let code = prompt("Entrez le code administrateur :");
+  if (code==="233233") {
+    isAdmin = true;
+    document.getElementById("adminPanel").style.display="block";
+    afficherAnnonces();
+    afficherFichiersAdmin();
+  } else { alert("Code incorrect !"); }
+}
+
+// ---------- ANNONCES ----------
+let annonces = ["Bienvenue sur la radio 🎶"];
+function afficherAnnonces() {
+  document.getElementById("annonceText").textContent = annonces.join(" | ");
+  if(isAdmin){
+    let container = document.getElementById("listeAnnonces");
+    container.innerHTML="";
+    annonces.forEach((a,i)=>{
+      let div = document.createElement("div");
+      div.className="item";
+      div.innerHTML=`<span>${a}</span><button class="btn" onclick="supprimerAnnonce(${i})">Supprimer</button>`;
+      container.appendChild(div);
+    });
+  }
+}
+function ajouterAnnonce() {
+  let txt=document.getElementById("newAnnonce").value.trim();
+  if(txt){ annonces.push(txt); document.getElementById("newAnnonce").value=""; afficherAnnonces(); }
+}
+function supprimerAnnonce(i){ annonces.splice(i,1); afficherAnnonces(); }
+
+// ---------- FICHIERS ----------
+let fichiers = [
+  {nom:"Test Audio", url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
+  {nom:"Test YouTube", url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
+];
+let currentIndex = 0;
+let repeat=false;
+let repeatAll=false;
+let currentPlayer = null;
+
+function afficherFichiers(){
+  let container=document.getElementById("fileList");
+  container.innerHTML="";
+  fichiers.forEach((f,i)=>{
+    let div=document.createElement("div");
+    div.className="fichier"; div.textContent=f.nom;
+    div.onclick=()=>playLink(f.url,i);
+    container.appendChild(div);
+  });
+}
+function afficherFichiersAdmin(){
+  let container=document.getElementById("listeFichiers"); container.innerHTML="";
+  fichiers.forEach((f,i)=>{
+    let div=document.createElement("div");
+    div.className="item";
+    div.innerHTML=`<span>${f.nom}</span><button class="btn" onclick="supprimerFichier(${i})">Supprimer</button>`;
+    container.appendChild(div);
+  });
+}
+function ajouterFichier(){
+  let nom=document.getElementById("newFichierNom").value.trim();
+  let url=document.getElementById("newFichierURL").value.trim();
+  if(nom && url){
+    fichiers.push({nom,url});
+    document.getElementById("newFichierNom").value="";
+    document.getElementById("newFichierURL").value="";
+    afficherFichiers();
+    afficherFichiersAdmin();
+  }
+}
+function supprimerFichier(i){
+  fichiers.splice(i,1);
+  afficherFichiers();
+  afficherFichiersAdmin();
+}
+
+// ---------- LECTEUR ----------
+function playLink(url,index=null){
+  if(index!==null) currentIndex=index;
+  const audio=document.getElementById("audioPlayer");
+  const video=document.getElementById("videoPlayer");
+  const ytDiv=document.getElementById("youtubePlayer");
+  const ytIframe=document.getElementById("ytIframe");
+
+  audio.style.display="none"; video.style.display="none"; ytDiv.style.display="none";
+  if(audio) audio.pause(); if(video) video.pause();
+  currentPlayer=null;
+
+  if(url.includes("youtube.com") || url.includes("youtu.be")){
+    let videoId="";
+    if(url.includes("youtu.be")) videoId=url.split("/").pop().split("?")[0];
+    else { let params=new URL(url).searchParams; videoId=params.get("v"); }
+    ytIframe.src="https://www.youtube.com/embed/"+videoId+"?autoplay=1";
+    ytDiv.style.display="block";
+    currentPlayer = { type:"yt", url:url };
+    ytIframe.onerror = function() { alert("Impossible de lire la vidéo YouTube."); ytIframe.src=""; ytDiv.style.display="none"; }
+  } else if(url.endsWith(".mp3")){ audio.src=url; audio.style.display="block"; audio.play(); currentPlayer=audio; audio.onended=playNext;
+  } else if(url.endsWith(".mp4")){ video.src=url; video.style.display="block"; video.play(); currentPlayer=video; video.onended=playNext;
+  } else alert("Type de fichier non supporté");
+}
+
+function playNext(){
+  if(repeat){ playLink(fichiers[currentIndex].url,currentIndex); } else{
+    currentIndex++;
+    if(currentIndex>=fichiers.length){ if(repeatAll) currentIndex=0; else return; }
+    playLink(fichiers[currentIndex].url,currentIndex);
+  }
+}
+function playCurrent(){ playLink(fichiers[currentIndex].url,currentIndex); }
+function stopCurrent(){ if(currentPlayer){ if(currentPlayer.type==="yt") document.getElementById("ytIframe").src=""; else currentPlayer.pause(); } }
+function toggleRepeat(){ repeat=!repeat; alert("Repeat: "+repeat); }
+function toggleRepeatAll(){ repeatAll=!repeatAll; alert("Repeat All: "+repeatAll); }
+
+afficherAnnonces();
+afficherFichiers();
+</script>
+
+</body>
+  </html>
