@@ -3,54 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>radio chocolat </title>
+<title>Radio Chocolat - Playlist Miniatures</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#111; color:#fff; }
-header { background:#222; padding:10px; display:flex; justify-content:space-between; align-items:center; }
-.menu { cursor:pointer; font-size:20px; }
-nav { display:none; background:#333; padding:10px; }
-nav a { display:block; color:#fff; margin:5px 0; text-decoration:none; }
-.annonce { background:#444; padding:10px; text-align:center; font-weight:bold; }
-.contenu { padding:20px; margin-bottom:100px; }
-.fichier { background:#222; padding:10px; margin:5px 0; cursor:pointer; border-radius:5px; }
-.fichier:hover { background:#444; }
-#adminPanel { display:none; background:#222; padding:10px; margin-top:20px; }
-.item { display:flex; justify-content:space-between; background:#333; padding:5px; margin:5px 0; border-radius:5px; }
-.btn { padding:5px 8px; cursor:pointer; background:red; border:none; color:#fff; border-radius:4px; }
-footer { background:#222; color:#fff; text-align:center; padding:10px; position:fixed; bottom:0; width:100%; }
-#playerContainer { margin-top:20px; text-align:center; }
-video, audio { max-width:100%; margin-bottom:10px; }
-iframe { max-width:100%; }
-input { padding:5px; margin:5px 0; width:60%; }
-#playerControls button { margin:5px; }
+body{margin:0;padding:0;font-family:Arial,sans-serif;background:#111;color:#fff;display:flex;flex-direction:column;min-height:100vh;}
+header{background:#222;padding:10px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+.menu{cursor:pointer;font-size:20px;}
+nav{display:none;background:#333;padding:10px;position:sticky;top:50px;z-index:90;}
+nav a{display:block;color:#fff;margin:5px 0;text-decoration:none;}
+.annonce{background:#111;padding:10px;text-align:center;font-weight:bold;overflow:hidden;white-space:nowrap;border-top:2px solid red;border-bottom:2px solid red;}
+.annonce span{display:inline-block;animation:scroll 20s linear infinite;color:#0f0;font-size:16px;}
+@keyframes scroll{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
+.mainContainer{display:flex;flex:1;flex-direction:row;}
+.playlist{width:35%;max-height:70vh;overflow-y:auto;border-right:1px solid #444;padding:5px;}
+.playlistItem{display:flex;align-items:center;background:#222;margin:5px 0;padding:5px;border-radius:5px;cursor:pointer;}
+.playlistItem:hover{background:#444;}
+.playlistItem img{width:60px;height:40px;margin-right:5px;object-fit:cover;border-radius:3px;}
+.playerArea{flex:1;padding:5px;text-align:center;}
+video,audio,iframe{width:100%;max-height:60vh;background:#000;margin-bottom:5px;}
+#playerControls{display:flex;justify-content:center;flex-wrap:wrap;padding:5px;}
+.btn{padding:5px 8px;margin:2px;background:red;color:#fff;border:none;border-radius:4px;cursor:pointer;}
+footer{background:#222;color:#fff;text-align:center;padding:10px;}
+@media(max-width:768px){.mainContainer{flex-direction:column;}.playlist{width:100%;max-height:150px;display:flex;overflow-x:auto;}.playlistItem{flex:0 0 auto;margin:0 5px;}}
 </style>
 </head>
 <body>
 
 <header>
   <div class="menu" onclick="toggleMenu()">☰ Menu</div>
-  <h1>chocolat</h1>
+  <h1>Chocolat</h1>
+  <div id="soundIcon" onclick="toggleBgMusic()" style="cursor:pointer;font-size:22px;">🔊</div>
 </header>
 
 <nav id="menu">
-  <a href="#">Accueil</a>
-  <a href="#" onclick="showAdminLogin()">Admin</a>
+  <a href="#">🏠 Accueil</a>
+  <a href="#">📺 Chaînes TV</a>
+  <a href="#">🎵 Musique</a>
+  <a href="#">📞 Contact</a>
+  <a href="#" onclick="toggleBgMusic()">🎶 Musique de fond ON/OFF</a>
 </nav>
 
-<div class="annonce" id="annonceZone">
-  <marquee id="annonceText">Bienvenue sur la radio 🎶</marquee>
+<div class="annonce">
+  <span>📢 Michel de Nyom3 souhaite bon début de semaine à Miniminor de Nkolondom | Pour toute annonce, publicité, visibilité, marketing, anniversaire, mariage, événement ➝ WhatsApp : +237651475255 | Facebook : Les facilitateurs middleman 📢</span>
+  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" autoplay loop hidden></audio>
 </div>
 
-<div class="contenu">
-  <h2>Fichiers disponibles 🎵</h2>
-  <div id="fileList"></div>
-
-  <div id="playerContainer">
+<div class="mainContainer">
+  <div class="playlist" id="playlist"></div>
+  <div class="playerArea">
     <audio id="audioPlayer" controls style="display:none;"></audio>
     <video id="videoPlayer" controls style="display:none;"></video>
-    <div id="youtubePlayer" style="display:none;">
-      <iframe id="ytIframe" width="560" height="315" frameborder="0" allowfullscreen></iframe>
-    </div>
+    <div id="youtubePlayer" style="display:none;"><iframe id="ytIframe" frameborder="0" allowfullscreen></iframe></div>
     <div id="playerControls">
       <button onclick="playCurrent()" class="btn">▶️ Play</button>
       <button onclick="stopCurrent()" class="btn">⏹️ Stop</button>
@@ -60,151 +62,91 @@ input { padding:5px; margin:5px 0; width:60%; }
   </div>
 </div>
 
-<div id="adminPanel">
-  <h2>Tableau Administrateur</h2>
+<footer>2025 Les Facilitateurs tous droits reservés </footer>
 
-  <h3>📢 Gestion des annonces</h3>
-  <input type="text" id="newAnnonce" placeholder="Nouvelle annonce">
-  <button onclick="ajouterAnnonce()">Ajouter</button>
-  <div id="listeAnnonces"></div>
-
-  <h3>🎶 Gestion des fichiers</h3>
-  <input type="text" id="newFichierNom" placeholder="Nom du fichier">
-  <input type="text" id="newFichierURL" placeholder="URL du fichier audio/vidéo">
-  <button onclick="ajouterFichier()">Ajouter</button>
-  <div id="listeFichiers"></div>
-</div>
-
-<footer>
-  <p>2025 lesfacilitateirs tous droits reservés</p>
-</footer>
-
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
-// ---------- MENU ----------
-function toggleMenu() {
-  let menu = document.getElementById("menu");
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
+// MENU
+function toggleMenu(){let m=document.getElementById("menu");m.style.display=m.style.display==="block"?"none":"block";}
 
-// ---------- ADMIN ----------
-let isAdmin = false;
-function showAdminLogin() {
-  let code = prompt("Entrez le code administrateur :");
-  if (code==="233233") {
-    isAdmin = true;
-    document.getElementById("adminPanel").style.display="block";
-    afficherAnnonces();
-    afficherFichiersAdmin();
-  } else { alert("Code incorrect !"); }
-}
-
-// ---------- ANNONCES ----------
-let annonces = ["💥 Michel de Nyom3 dit bsr à miniminor de nkolondom 😘 contact admin pour toutes annonces publicitaires, communiqué , publicité, visibilité, partenariat à What's 651475255 où à la page Facebook Lesfacilitateurs Middleman 😘🍹❤️ 🎶"];
-function afficherAnnonces() {
-  document.getElementById("annonceText").textContent = annonces.join(" | ");
-  if(isAdmin){
-    let container = document.getElementById("listeAnnonces");
-    container.innerHTML="";
-    annonces.forEach((a,i)=>{
-      let div = document.createElement("div");
-      div.className="item";
-      div.innerHTML=`<span>${a}</span><button class="btn" onclick="supprimerAnnonce(${i})">Supprimer</button>`;
-      container.appendChild(div);
-    });
-  }
-}
-function ajouterAnnonce() {
-  let txt=document.getElementById("newAnnonce").value.trim();
-  if(txt){ annonces.push(txt); document.getElementById("newAnnonce").value=""; afficherAnnonces(); }
-}
-function supprimerAnnonce(i){ annonces.splice(i,1); afficherAnnonces(); }
-
-// ---------- FICHIERS ----------
-let fichiers = [
-  {nom:"Test Audio", url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
-  {nom:"Test YouTube", url:"https://www.youtube.com/watch?v=dQw4w9WgXcQ"}
+// PLAYLIST
+let fichiers=[
+  {nom:"Simulation 1 - Audio",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",thumb:"https://via.placeholder.com/60x40?text=MP3"},
+  {nom:"xxx 2 - xxx ",url:"https://www.xvideos2.com/",thumb:"https://vm.tiktok.com/ZMHnUC4Jjvr42-GquvG/"},
+  {nom:"tiktok 3 - Soccer",url:"https://vm.tiktok.com/ZMHnUC7h3RcPt-Usz1t/",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+  {nom:"Sport 4 - VIPLeague",url:"https://www.vipleague.la",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+  {nom:"porno 5 - NFL",url:"https://www.porn300.com/fr/tag/femme-mature/",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+  {nom:"sport 6 - Boxing",url:"https://boxingstreamlinks.com",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+  {nom:"sport 7 - MMA",url:"https://reddit9.mmastreamlinks.com",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+  {nom:"Sport 8 - NBA",url:"https://reddit6.nbastreamlinks.net",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+  {nom:"sport 9 - MP4",url:"https://www.w3schools.com/html/mov_bbb.mp4",thumb:"https://via.placeholder.com/60x40?text=MP4"},
+  {nom:"dessin animé 10 - HLS",url:"https://storage.kanzaki.ru/ANIME___/",thumb:"https://via.placeholder.com/60x40?text=HLS"}
 ];
-let currentIndex = 0;
-let repeat=false;
-let repeatAll=false;
-let currentPlayer = null;
+let currentIndex=0,repeat=false,repeatAll=false,currentPlayer=null,currentHls=null,refreshInterval=null;
 
-function afficherFichiers(){
-  let container=document.getElementById("fileList");
-  container.innerHTML="";
+function afficherPlaylist(){
+  let c=document.getElementById("playlist"); c.innerHTML="";
   fichiers.forEach((f,i)=>{
-    let div=document.createElement("div");
-    div.className="fichier"; div.textContent=f.nom;
-    div.onclick=()=>playLink(f.url,i);
-    container.appendChild(div);
+    let d=document.createElement("div"); d.className="playlistItem";
+    d.innerHTML=`<img src="${f.thumb}" alt=""><span>${f.nom}</span>`;
+    d.onclick=()=>playStream(f.url,i); c.appendChild(d);
   });
 }
-function afficherFichiersAdmin(){
-  let container=document.getElementById("listeFichiers"); container.innerHTML="";
-  fichiers.forEach((f,i)=>{
-    let div=document.createElement("div");
-    div.className="item";
-    div.innerHTML=`<span>${f.nom}</span><button class="btn" onclick="supprimerFichier(${i})">Supprimer</button>`;
-    container.appendChild(div);
-  });
-}
-function ajouterFichier(){
-  let nom=document.getElementById("newFichierNom").value.trim();
-  let url=document.getElementById("newFichierURL").value.trim();
-  if(nom && url){
-    fichiers.push({nom,url});
-    document.getElementById("newFichierNom").value="";
-    document.getElementById("newFichierURL").value="";
-    afficherFichiers();
-    afficherFichiersAdmin();
-  }
-}
-function supprimerFichier(i){
-  fichiers.splice(i,1);
-  afficherFichiers();
-  afficherFichiersAdmin();
+
+// MUSIQUE DE FOND
+function toggleBgMusic(){
+  let bg=document.getElementById("bgMusic");
+  let icon=document.getElementById("soundIcon");
+  if(bg.paused){bg.play();icon.textContent="🔊";}
+  else {bg.pause();icon.textContent="🔇";}
 }
 
-// ---------- LECTEUR ----------
-function playLink(url,index=null){
+// LECTEUR STREAM/LIEN
+async function getM3U8(url){try{let r=await fetch(url,{mode:'cors'});let t=await r.text();let m=t.match(/(https?:\/\/.*?\.m3u8)/g);return m?m[0]:null;}catch(e){console.error(e);return null;}}
+function isStreamingSite(url){return ["vipleague.la","nfl.nflstreamlinks.com","boxingstreamlinks.com","reddit6.nbastreamlinks.net","reddit9.mmastreamlinks.com","soccerstreamlinks.com"].some(s=>url.includes(s));}
+
+async function playStream(url,index=null){
   if(index!==null) currentIndex=index;
   const audio=document.getElementById("audioPlayer");
   const video=document.getElementById("videoPlayer");
   const ytDiv=document.getElementById("youtubePlayer");
   const ytIframe=document.getElementById("ytIframe");
-
-  audio.style.display="none"; video.style.display="none"; ytDiv.style.display="none";
+  audio.style.display=video.style.display=ytDiv.style.display="none";
   if(audio) audio.pause(); if(video) video.pause();
+  if(currentHls){ currentHls.destroy(); currentHls=null; }
+  if(refreshInterval){ clearInterval(refreshInterval); refreshInterval=null; }
   currentPlayer=null;
 
-  if(url.includes("youtube.com") || url.includes("youtu.be")){
-    let videoId="";
-    if(url.includes("youtu.be")) videoId=url.split("/").pop().split("?")[0];
-    else { let params=new URL(url).searchParams; videoId=params.get("v"); }
-    ytIframe.src="https://www.youtube.com/embed/"+videoId+"?autoplay=1";
-    ytDiv.style.display="block";
-    currentPlayer = { type:"yt", url:url };
-    ytIframe.onerror = function() { alert("Impossible de lire la vidéo YouTube."); ytIframe.src=""; ytDiv.style.display="none"; }
-  } else if(url.endsWith(".mp3")){ audio.src=url; audio.style.display="block"; audio.play(); currentPlayer=audio; audio.onended=playNext;
-  } else if(url.endsWith(".mp4")){ video.src=url; video.style.display="block"; video.play(); currentPlayer=video; video.onended=playNext;
-  } else alert("Type de fichier non supporté");
-}
-
-function playNext(){
-  if(repeat){ playLink(fichiers[currentIndex].url,currentIndex); } else{
-    currentIndex++;
-    if(currentIndex>=fichiers.length){ if(repeatAll) currentIndex=0; else return; }
-    playLink(fichiers[currentIndex].url,currentIndex);
+  if(url.includes("youtube.com")||url.includes("youtu.be")){
+    let id=url.includes("youtu.be")?url.split("/").pop().split("?")[0]:new URL(url).searchParams.get("v");
+    ytIframe.src="https://www.youtube.com/embed/"+id+"?autoplay=1"; 
+    ytDiv.style.display="block"; 
+    currentPlayer={type:"yt",url};
+  } else if(url.endsWith(".mp3")){
+    audio.src=url; audio.style.display="block"; audio.play(); 
+    currentPlayer=audio; audio.onended=playNext;
+  } else if(url.endsWith(".mp4")){
+    video.src=url; video.style.display="block"; video.play(); 
+    currentPlayer=video; video.onended=playNext;
+  } else if(isStreamingSite(url)){
+    // ouvre tous les flux externes dans un nouvel onglet
+    window.open(url,"_blank");
+  } else {
+    // pour tout autre lien inconnu
+    window.open(url,"_blank");
   }
 }
-function playCurrent(){ playLink(fichiers[currentIndex].url,currentIndex); }
-function stopCurrent(){ if(currentPlayer){ if(currentPlayer.type==="yt") document.getElementById("ytIframe").src=""; else currentPlayer.pause(); } }
-function toggleRepeat(){ repeat=!repeat; alert("Repeat: "+repeat); }
-function toggleRepeatAll(){ repeatAll=!repeatAll; alert("Repeat All: "+repeatAll); }
 
-afficherAnnonces();
-afficherFichiers();
+function playNext(){if(repeat){playStream(fichiers[currentIndex].url,currentIndex);} else{currentIndex++;if(currentIndex>=fichiers.length){if(repeatAll) currentIndex=0;else return;}playStream(fichiers[currentIndex].url,currentIndex);}}
+function playCurrent(){playStream(fichiers[currentIndex].url,currentIndex);}
+function stopCurrent(){if(currentPlayer){if(currentPlayer.type==="yt")document.getElementById("ytIframe").src="";else currentPlayer.pause();}
+if(currentHls){currentHls.destroy();currentHls=null;}if(refreshInterval){clearInterval(refreshInterval);refreshInterval=null;}}
+function toggleRepeat(){repeat=!repeat;alert("Repeat: "+repeat);}
+function toggleRepeatAll(){repeatAll=!repeatAll;alert("Repeat All: "+repeatAll);}
+
+afficherPlaylist();
+window.addEventListener("load",()=>{playCurrent();});
 </script>
 
 </body>
-  </html>
+</html>
