@@ -6,8 +6,8 @@
 <title>Radio Chocolat - Playlist Miniatures</title>
 <style>
 body{margin:0;padding:0;font-family:Arial,sans-serif;background:#111;color:#fff;display:flex;flex-direction:column;min-height:100vh;}
-header{background:#222;padding:10px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
-.menu{cursor:pointer;font-size:20px;}
+header{background:#222;padding:10px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;flex-wrap:wrap;}
+.menu{cursor:pointer;font-size:20px;margin-right:10px;}
 nav{display:none;background:#333;padding:10px;position:sticky;top:50px;z-index:90;}
 nav a{display:block;color:#fff;margin:5px 0;text-decoration:none;}
 .annonce{background:#111;padding:10px;text-align:center;font-weight:bold;overflow:hidden;white-space:nowrap;border-top:2px solid red;border-bottom:2px solid red;margin-bottom:5px;}
@@ -26,20 +26,20 @@ video,audio,iframe{width:100%;max-height:60vh;background:#000;margin-bottom:5px;
 #playerControls{display:flex;justify-content:center;flex-wrap:wrap;padding:5px;}
 .btn{padding:5px 8px;margin:2px;background:red;color:#fff;border:none;border-radius:4px;cursor:pointer;transition:0.3s;}
 .btn:hover{background:green;}
-footer{background:#222;color:#fff;text-align:center;padding:10px;}
+footer{background:#222;color:#fff;text-align:center;padding:10px;margin-top:auto;}
 @media(max-width:768px){.mainContainer{flex-direction:column;}.playlist{width:100%;max-height:150px;display:flex;overflow-x:auto;}.playlistItem{flex:0 0 auto;margin:0 5px;}}
 </style>
 </head>
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;">
+  <div style="display:flex;align-items:center;flex-wrap:wrap;">
     <div class="menu" onclick="toggleMenu()">☰ Menu</div>
+    <h1 style="margin:0 10px;">Radio Chocolat</h1>
     <div id="localTime"></div>
     <div id="connectedUsers"></div>
     <div id="subscribers">👤 Abonnés: 0</div>
   </div>
-  <h1>Chocolat</h1>
 </header>
 
 <nav id="menu">
