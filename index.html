@@ -10,9 +10,12 @@ header{background:#222;padding:10px;display:flex;justify-content:space-between;a
 .menu{cursor:pointer;font-size:20px;}
 nav{display:none;background:#333;padding:10px;position:sticky;top:50px;z-index:90;}
 nav a{display:block;color:#fff;margin:5px 0;text-decoration:none;}
-.annonce{background:#111;padding:10px;text-align:center;font-weight:bold;overflow:hidden;white-space:nowrap;border-top:2px solid red;border-bottom:2px solid red;}
-.annonce span{display:inline-block;animation:scroll 20s linear infinite;color:#0f0;font-size:16px;}
+.annonce{background:#111;padding:10px;text-align:center;font-weight:bold;overflow:hidden;white-space:nowrap;border-top:2px solid red;border-bottom:2px solid red;margin-bottom:5px;}
+.annonce span{display:inline-block;animation:scroll 20s linear infinite;color:#0f0;font-size:16px;margin-right:10px;}
 @keyframes scroll{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
+.announceBtn{padding:3px 8px;margin-left:5px;background:red;color:#fff;border:none;border-radius:4px;cursor:pointer;transition:0.3s;}
+.announceBtn.active{background:green;transform:scale(1.1);}
+#localTime, #connectedUsers, #subscribers{margin-left:10px;font-size:14px;}
 .mainContainer{display:flex;flex:1;flex-direction:row;}
 .playlist{width:35%;max-height:70vh;overflow-y:auto;border-right:1px solid #444;padding:5px;}
 .playlistItem{display:flex;align-items:center;background:#222;margin:5px 0;padding:5px;border-radius:5px;cursor:pointer;}
@@ -21,7 +24,8 @@ nav a{display:block;color:#fff;margin:5px 0;text-decoration:none;}
 .playerArea{flex:1;padding:5px;text-align:center;}
 video,audio,iframe{width:100%;max-height:60vh;background:#000;margin-bottom:5px;}
 #playerControls{display:flex;justify-content:center;flex-wrap:wrap;padding:5px;}
-.btn{padding:5px 8px;margin:2px;background:red;color:#fff;border:none;border-radius:4px;cursor:pointer;}
+.btn{padding:5px 8px;margin:2px;background:red;color:#fff;border:none;border-radius:4px;cursor:pointer;transition:0.3s;}
+.btn:hover{background:green;}
 footer{background:#222;color:#fff;text-align:center;padding:10px;}
 @media(max-width:768px){.mainContainer{flex-direction:column;}.playlist{width:100%;max-height:150px;display:flex;overflow-x:auto;}.playlistItem{flex:0 0 auto;margin:0 5px;}}
 </style>
@@ -29,9 +33,13 @@ footer{background:#222;color:#fff;text-align:center;padding:10px;}
 <body>
 
 <header>
-  <div class="menu" onclick="toggleMenu()">☰ Menu</div>
+  <div style="display:flex;align-items:center;">
+    <div class="menu" onclick="toggleMenu()">☰ Menu</div>
+    <div id="localTime"></div>
+    <div id="connectedUsers"></div>
+    <div id="subscribers">👤 Abonnés: 0</div>
+  </div>
   <h1>Chocolat</h1>
-  <div id="soundIcon" onclick="toggleBgMusic()" style="cursor:pointer;font-size:22px;">🔊</div>
 </header>
 
 <nav id="menu">
@@ -39,12 +47,16 @@ footer{background:#222;color:#fff;text-align:center;padding:10px;}
   <a href="#">📺 Chaînes TV</a>
   <a href="#">🎵 Musique</a>
   <a href="#">📞 Contact</a>
-  <a href="#" onclick="toggleBgMusic()">🎶 Musique de fond ON/OFF</a>
 </nav>
 
+<!-- BANDES ANNONCES -->
 <div class="annonce">
-  <span>📢 Michel de Nyom3 souhaite bon début de semaine à Miniminor de Nkolondom | Pour toute annonce, publicité, visibilité, marketing, anniversaire, mariage, événement ➝ WhatsApp : +237651475255 | Facebook : Les facilitateurs middleman 📢</span>
-  <audio id="bgMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" autoplay loop hidden></audio>
+  <span id="announce1">📢 Michel de Nyom3 souhaite bon début de semaine à Miniminor de Nkolondom | WhatsApp : +237651475255 | Facebook : Les facilitateurs middleman 📢</span>
+  <button class="announceBtn" onclick="toggleSpeech(0)">🔊 ON</button>
+</div>
+<div class="annonce">
+  <span id="announce2">📢 Deuxième annonce publicitaire : profitez des offres et événements spéciaux !</span>
+  <button class="announceBtn" onclick="toggleSpeech(1)">🔊 ON</button>
 </div>
 
 <div class="mainContainer">
@@ -54,22 +66,43 @@ footer{background:#222;color:#fff;text-align:center;padding:10px;}
     <video id="videoPlayer" controls style="display:none;"></video>
     <div id="youtubePlayer" style="display:none;"><iframe id="ytIframe" frameborder="0" allowfullscreen></iframe></div>
     <div id="playerControls">
+      <button onclick="prevTrack()" class="btn">⏮️ Prev</button>
       <button onclick="playCurrent()" class="btn">▶️ Play</button>
       <button onclick="stopCurrent()" class="btn">⏹️ Stop</button>
+      <button onclick="nextTrack()" class="btn">⏭️ Next</button>
       <button onclick="toggleRepeat()" class="btn">🔁 Repeat</button>
       <button onclick="toggleRepeatAll()" class="btn">🔁 All</button>
     </div>
   </div>
 </div>
 
-<footer>2025 Les Facilitateurs tous droits reservés </footer>
+<footer>2025 Les Facilitateurs tous droits réservés</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
-// MENU
-function toggleMenu(){let m=document.getElementById("menu");m.style.display=m.style.display==="block"?"none":"block";}
+// ----- MENU -----
+function toggleMenu(){let m=document.getElementById("menu"); m.style.display=m.style.display==="block"?"none":"block";}
 
-// PLAYLIST
+// ----- HEURE LOCALE -----
+function updateTime(){document.getElementById("localTime").textContent = new Date().toLocaleTimeString();}
+setInterval(updateTime,1000); updateTime();
+
+// ----- UTILISATEURS CONNECTÉS FICTIFS -----
+function updateUsers(){
+  document.getElementById("connectedUsers").textContent = "👥 Connectés: "+(Math.floor(Math.random()*500)+50);
+}
+setInterval(updateUsers,3000); updateUsers();
+
+// ----- COMPTEUR ABONNES ANIME -----
+let subscriberCount = Math.floor(Math.random()*1000)+500;
+function updateSubscribers(){
+  subscriberCount += Math.floor(Math.random()*5)*(Math.random()>0.5?1:-1);
+  if(subscriberCount<0) subscriberCount=0;
+  document.getElementById("subscribers").textContent = "👤 Abonnés: "+subscriberCount;
+}
+setInterval(updateSubscribers,1000); updateSubscribers();
+
+// ----- PLAYLIST -----
 let fichiers=[
   {nom:"Simulation 1 - Audio",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",thumb:"https://via.placeholder.com/60x40?text=MP3"},
   {nom:"xxx 2 - xxx ",url:"https://www.xvideos2.com/",thumb:"https://vm.tiktok.com/ZMHnUC4Jjvr42-GquvG/"},
@@ -82,28 +115,23 @@ let fichiers=[
   {nom:"sport 9 - MP4",url:"https://www.w3schools.com/html/mov_bbb.mp4",thumb:"https://via.placeholder.com/60x40?text=MP4"},
   {nom:"dessin animé 10 - HLS",url:"https://storage.kanzaki.ru/ANIME___/",thumb:"https://via.placeholder.com/60x40?text=HLS"}
 ];
-let currentIndex=0,repeat=false,repeatAll=false,currentPlayer=null,currentHls=null,refreshInterval=null;
+let currentIndex=0,repeat=false,repeatAll=false,currentPlayer=null,currentHls=null;
 
+// Afficher playlist
 function afficherPlaylist(){
   let c=document.getElementById("playlist"); c.innerHTML="";
   fichiers.forEach((f,i)=>{
     let d=document.createElement("div"); d.className="playlistItem";
     d.innerHTML=`<img src="${f.thumb}" alt=""><span>${f.nom}</span>`;
-    d.onclick=()=>playStream(f.url,i); c.appendChild(d);
+    d.onclick=()=>playStream(f.url,i);
+    c.appendChild(d);
   });
 }
 
-// MUSIQUE DE FOND
-function toggleBgMusic(){
-  let bg=document.getElementById("bgMusic");
-  let icon=document.getElementById("soundIcon");
-  if(bg.paused){bg.play();icon.textContent="🔊";}
-  else {bg.pause();icon.textContent="🔇";}
+// LECTEUR UNIVERSAL
+function isStreamingSite(url){
+  return ["vipleague.la","nfl.nflstreamlinks.com","boxingstreamlinks.com","reddit6.nbastreamlinks.net","reddit9.mmastreamlinks.com","soccerstreamlinks.com"].some(s=>url.includes(s));
 }
-
-// LECTEUR STREAM/LIEN
-async function getM3U8(url){try{let r=await fetch(url,{mode:'cors'});let t=await r.text();let m=t.match(/(https?:\/\/.*?\.m3u8)/g);return m?m[0]:null;}catch(e){console.error(e);return null;}}
-function isStreamingSite(url){return ["vipleague.la","nfl.nflstreamlinks.com","boxingstreamlinks.com","reddit6.nbastreamlinks.net","reddit9.mmastreamlinks.com","soccerstreamlinks.com"].some(s=>url.includes(s));}
 
 async function playStream(url,index=null){
   if(index!==null) currentIndex=index;
@@ -114,39 +142,53 @@ async function playStream(url,index=null){
   audio.style.display=video.style.display=ytDiv.style.display="none";
   if(audio) audio.pause(); if(video) video.pause();
   if(currentHls){ currentHls.destroy(); currentHls=null; }
-  if(refreshInterval){ clearInterval(refreshInterval); refreshInterval=null; }
   currentPlayer=null;
 
   if(url.includes("youtube.com")||url.includes("youtu.be")){
     let id=url.includes("youtu.be")?url.split("/").pop().split("?")[0]:new URL(url).searchParams.get("v");
-    ytIframe.src="https://www.youtube.com/embed/"+id+"?autoplay=1"; 
-    ytDiv.style.display="block"; 
-    currentPlayer={type:"yt",url};
-  } else if(url.endsWith(".mp3")){
-    audio.src=url; audio.style.display="block"; audio.play(); 
-    currentPlayer=audio; audio.onended=playNext;
-  } else if(url.endsWith(".mp4")){
-    video.src=url; video.style.display="block"; video.play(); 
-    currentPlayer=video; video.onended=playNext;
-  } else if(isStreamingSite(url)){
-    // ouvre tous les flux externes dans un nouvel onglet
-    window.open(url,"_blank");
+    ytIframe.src="https://www.youtube.com/embed/"+id+"?autoplay=1"; ytDiv.style.display="block"; currentPlayer={type:"yt",url};
+  } else if(url.endsWith(".mp3")){ audio.src=url; audio.style.display="block"; audio.play(); currentPlayer=audio; audio.onended=nextTrack;
+  } else if(url.endsWith(".mp4")){ video.src=url; video.style.display="block"; video.play(); currentPlayer=video; video.onended=nextTrack;
+  } else if(isStreamingSite(url)){ window.open(url,"_blank"); } else { window.open(url,"_blank"); }
+}
+
+// CONTROLES LECTEUR
+function nextTrack(){currentIndex++; if(currentIndex>=fichiers.length){if(repeatAll) currentIndex=0;else return;} playStream(fichiers[currentIndex].url,currentIndex);}
+function prevTrack(){currentIndex--; if(currentIndex<0){if(repeatAll) currentIndex=fichiers.length-1;else return;} playStream(fichiers[currentIndex].url,currentIndex);}
+function playCurrent(){playStream(fichiers[currentIndex].url,currentIndex);}
+function stopCurrent(){if(currentPlayer){if(currentPlayer.type==="yt") document.getElementById("ytIframe").src="";else currentPlayer.pause();} if(currentHls){currentHls.destroy();currentHls=null;}}
+function toggleRepeat(){repeat=!repeat; alert("Repeat: "+repeat);}
+function toggleRepeatAll(){repeatAll=!repeatAll; alert("Repeat All: "+repeatAll);}
+
+// BANDES ANNONCES VOCALE
+const synth = window.speechSynthesis;
+let speechUtterances = [null, null];
+let playingAnnounce = [false, false];
+
+function toggleSpeech(index){
+  const btn = document.querySelectorAll(".announceBtn")[index];
+  if(playingAnnounce[index]){
+    synth.cancel();
+    playingAnnounce[index] = false;
+    btn.textContent = "🔊 ON";
+    btn.style.background = "red";
   } else {
-    // pour tout autre lien inconnu
-    window.open(url,"_blank");
+    let text = index===0 ? document.getElementById("announce1").textContent
+                          : document.getElementById("announce2").textContent;
+    let utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "fr-FR";
+    utter.onend = () => { if(playingAnnounce[index]) toggleSpeech(index); };
+    speechUtterances[index] = utter;
+    synth.speak(utter);
+    playingAnnounce[index] = true;
+    btn.textContent = "⏹️ OFF";
+    btn.style.background = "green";
   }
 }
 
-function playNext(){if(repeat){playStream(fichiers[currentIndex].url,currentIndex);} else{currentIndex++;if(currentIndex>=fichiers.length){if(repeatAll) currentIndex=0;else return;}playStream(fichiers[currentIndex].url,currentIndex);}}
-function playCurrent(){playStream(fichiers[currentIndex].url,currentIndex);}
-function stopCurrent(){if(currentPlayer){if(currentPlayer.type==="yt")document.getElementById("ytIframe").src="";else currentPlayer.pause();}
-if(currentHls){currentHls.destroy();currentHls=null;}if(refreshInterval){clearInterval(refreshInterval);refreshInterval=null;}}
-function toggleRepeat(){repeat=!repeat;alert("Repeat: "+repeat);}
-function toggleRepeatAll(){repeatAll=!repeatAll;alert("Repeat All: "+repeatAll);}
-
+// INITIALISATION
 afficherPlaylist();
 window.addEventListener("load",()=>{playCurrent();});
 </script>
-
 </body>
 </html>
