@@ -47,7 +47,7 @@ footer{background:#222;color:#fff;text-align:center;padding:10px;}
   <a href="https://www.facebook.com/profile.php?id=61579628668796">📺 AKSYNIA market</a>
   <a href="https://www.facebook.com/profile.php?id=61579818028906">🎵 top deals 237</a>
   <a href="#">📞 Contact</a>
- <a href="#">🏠 Accueil</a>
+  <a href="#">🏠 Accueil</a>
   <a href="#">📺 Chaînes TV</a>
   <a href="#">🎵 Musique</a>
   <a href="#">📞 Contact</a>
@@ -79,6 +79,10 @@ footer{background:#222;color:#fff;text-align:center;padding:10px;}
     </div>
   </div>
 </div>
+
+<!-- MONETAG / PROPELLERADS ZONES -->
+<div id="zone1"></div>
+<div id="zone2"></div>
 
 <footer>2025 Les Facilitateurs tous droits réservés</footer>
 
@@ -112,16 +116,16 @@ let fichiers=[
 {nom:"bible en français- Audio",url:"https://emcitv.com/bible/audio/?utm_source=chatgpt.com",thumb:"https://via.placeholder.com/60x40?text=MP3"},
 {nom:"bible en anglais - Audio",url:"https://www.biblegateway.com/audio/dramatized/niv/Gen.1",thumb:"https://via.placeholder.com/60x40?text=MP3"},
 {nom:"coran français arabe- Audio",url:"https://archive.org/details/Le-Coran-complet?utm_source=chatgpt.com",thumb:"https://via.placeholder.com/60x40?text=MP3"},
-  {nom:"Simulation 1 - Audio",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",thumb:"https://via.placeholder.com/60x40?text=MP3"},
-  {nom:"xxx 2 - xxx ",url:"https://www.xvideos2.com/",thumb:"https://vm.tiktok.com/ZMHnUC4Jjvr42-GquvG/"},
-  {nom:"tiktok 3 - Soccer",url:"https://vm.tiktok.com/ZMHnUC7h3RcPt-Usz1t/",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
-  {nom:"Sport 4 - VIPLeague",url:"https://www.vipleague.la",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
-  {nom:"porno 5 - NFL",url:"https://www.porn300.com/fr/tag/femme-mature/",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
-  {nom:"sport 6 - Boxing",url:"https://boxingstreamlinks.com",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
-  {nom:"pub 7 - lfg",url:"https://vm.tiktok.com/ZMHnUC4Jjvr42-GquvG/",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
-  {nom:"Sport 8 - NBA",url:"https://reddit6.nbastreamlinks.net",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
-  {nom:"sport 9 - MP4",url:"https://www.w3schools.com/html/mov_bbb.mp4",thumb:"https://via.placeholder.com/60x40?text=MP4"},
-  {nom:"dessin animé 10 - HLS",url:"https://storage.kanzaki.ru/ANIME___/",thumb:"https://via.placeholder.com/60x40?text=HLS"}
+{nom:"Simulation 1 - Audio",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",thumb:"https://via.placeholder.com/60x40?text=MP3"},
+{nom:"xxx 2 - xxx ",url:"https://www.xvideos2.com/",thumb:"https://vm.tiktok.com/ZMHnUC4Jjvr42-GquvG/"},
+{nom:"tiktok 3 - Soccer",url:"https://vm.tiktok.com/ZMHnUC7h3RcPt-Usz1t/",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+{nom:"Sport 4 - VIPLeague",url:"https://www.vipleague.la",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+{nom:"porno 5 - NFL",url:"https://www.porn300.com/fr/tag/femme-mature/",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+{nom:"sport 6 - Boxing",url:"https://boxingstreamlinks.com",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+{nom:"pub 7 - lfg",url:"https://vm.tiktok.com/ZMHnUC4Jjvr42-GquvG/",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+{nom:"Sport 8 - NBA",url:"https://reddit6.nbastreamlinks.net",thumb:"https://via.placeholder.com/60x40?text=LIVE"},
+{nom:"sport 9 - MP4",url:"https://www.w3schools.com/html/mov_bbb.mp4",thumb:"https://via.placeholder.com/60x40?text=MP4"},
+{nom:"dessin animé 10 - HLS",url:"https://storage.kanzaki.ru/ANIME___/",thumb:"https://via.placeholder.com/60x40?text=HLS"}
 ];
 let currentIndex=0,repeat=false,repeatAll=false,currentPlayer=null,currentHls=null;
 
@@ -198,5 +202,10 @@ function toggleSpeech(index){
 afficherPlaylist();
 window.addEventListener("load",()=>{playCurrent();});
 </script>
+
+<!-- Scripts Monetag / PropellerAds -->
+<script async src="https://monetag.com/YOUR_ZONE_ID_1.js"></script>
+<script async src="https://monetag.com/YOUR_ZONE_ID_2.js"></script>
+
 </body>
 </html>
